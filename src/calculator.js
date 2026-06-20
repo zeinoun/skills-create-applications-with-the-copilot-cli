@@ -28,7 +28,49 @@ function div(a, b) {
   return a / b;
 }
 
+function mod(a, b) {
+  if (b === 0) {
+    throw new Error('Modulo by zero');
+  }
+  return a % b;
+}
+
+function power(base, exponent) {
+  return Math.pow(base, exponent);
+}
+
+function squareRoot(n) {
+  if (n < 0) {
+    const e = new Error('Square root of negative number');
+    e.code = 'ENEGSQRT';
+    throw e;
+  }
+  return Math.sqrt(n);
+}
+
 function compute(op, aRaw, bRaw) {
+  // Support unary sqrt and binary operations
+  const unaryOps = ['sqrt', '√'];
+  if (unaryOps.includes(op)) {
+    const a = toNumber(aRaw);
+    if (Number.isNaN(a)) {
+      const e = new Error('Invalid numeric operand');
+      e.code = 'EINVALID';
+      throw e;
+    }
+
+    switch (op) {
+      case 'sqrt':
+      case '√':
+        return squareRoot(a);
+      default: {
+        const e = new Error(`Unsupported operation: ${op}`);
+        e.code = 'EUNSUP';
+        throw e;
+      }
+    }
+  }
+
   const a = toNumber(aRaw);
   const b = toNumber(bRaw);
   if (Number.isNaN(a) || Number.isNaN(b)) {
@@ -54,6 +96,13 @@ function compute(op, aRaw, bRaw) {
     case '/':
     case '÷':
       return div(a, b);
+    case 'mod':
+    case '%':
+      return mod(a, b);
+    case 'pow':
+    case '^':
+    case '**':
+      return power(a, b);
     default: {
       const e = new Error(`Unsupported operation: ${op}`);
       e.code = 'EUNSUP';
@@ -67,5 +116,8 @@ module.exports = {
   sub,
   mul,
   div,
+  mod,
+  power,
+  squareRoot,
   compute,
 };

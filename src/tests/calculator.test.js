@@ -1,4 +1,4 @@
-const { add, sub, mul, div, compute } = require('../calculator');
+const { add, sub, mul, div, mod, power, squareRoot, compute } = require('../calculator');
 
 describe('calculator basic operations', () => {
   test('addition: 2 + 3 = 5', () => {
@@ -30,6 +30,27 @@ describe('calculator basic operations', () => {
     expect(() => compute('/', 1, 0)).toThrow(/Division by zero/);
   });
 
+  test('modulo: 10 % 3 = 1 and modulo by zero throws', () => {
+    expect(mod(10, 3)).toBe(1);
+    expect(compute('%', 10, 3)).toBe(1);
+    expect(compute('mod', 10, 3)).toBe(1);
+    expect(() => mod(1, 0)).toThrow(/Modulo by zero/);
+    expect(() => compute('%', 1, 0)).toThrow(/Modulo by zero/);
+  });
+
+  test('power: 2 ^ 8 = 256', () => {
+    expect(power(2, 8)).toBe(256);
+    expect(compute('^', 2, 8)).toBe(256);
+    expect(compute('pow', 2, 8)).toBe(256);
+  });
+
+  test('square root: sqrt 9 = 3 and negative sqrt throws', () => {
+    expect(squareRoot(9)).toBe(3);
+    expect(compute('sqrt', 9)).toBe(3);
+    expect(() => squareRoot(-1)).toThrow(/Square root of negative number/);
+    expect(() => compute('sqrt', -1)).toThrow(/Square root of negative number/);
+  });
+
   test('invalid numeric operands throw EINVALID', () => {
     expect(() => compute('+', 'a', 1)).toThrow();
     try {
@@ -40,9 +61,9 @@ describe('calculator basic operations', () => {
   });
 
   test('unsupported operation throws EUNSUP', () => {
-    expect(() => compute('pow', 2, 3)).toThrow();
+    expect(() => compute('foo', 2, 3)).toThrow();
     try {
-      compute('pow', 2, 3);
+      compute('foo', 2, 3);
     } catch (err) {
       expect(err.code).toBe('EUNSUP');
     }
